@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Little Art Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #FFF8F0;
+      --ink: #2D2A26;
+      --sage: #7BAE8C;
+      --coral: #F47B5E;
+      --sky: #5BA8D4;
+      --sun: #F5C842;
+      --lavender: #A78FD4;
+      --mint: #5CBFB0;
+      --card: #FFFDF8;
+      --border: rgba(45,42,38,0.12);
+      --muted: #7A7060;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex-direction: column; min-height: 100dvh; }
+    .screen.active { display: flex; animation: fadeSlide 0.3s ease; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      background: var(--coral);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 15px 40px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #c95a3e;
+      transition: transform 0.12s, box-shadow 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 #c95a3e; }
+    .btn-primary:active { transform: translateY(2px);  box-shadow: 0 2px 0 #c95a3e; }
+
+    .btn-ghost {
+      background: none;
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      padding: 11px 32px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--coral); color: var(--coral); }
+
+    /* ── SPLASH ── */
+    #splash {
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 32px 48px;
+      gap: 0;
+      position: relative;
+    }
+
+    .doodle-bg {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    }
+    .doodle {
+      position: absolute;
+      font-size: 32px;
+      opacity: 0.15;
+      animation: floatDoodle 5s ease-in-out infinite;
+    }
+    @keyframes floatDoodle {
+      0%,100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-12px) rotate(3deg); }
+    }
+
+    .splash-logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 52px;
+      font-weight: 600;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+    .splash-logo span { color: var(--coral); }
+
+    .splash-tagline {
+      font-size: 16px;
+      color: var(--muted);
+      margin-bottom: 48px;
+      position: relative; z-index: 1;
+    }
+
+    .splash-btns {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      position: relative; z-index: 1;
+    }
+
+    /* ── QUIZ ── */
+    #quiz { padding: 32px 24px; gap: 24px; }
+
+    .quiz-header { display: flex; align-items: center; gap: 12px; }
+    .step-pill {
+      background: var(--sun);
+      color: var(--ink);
+      border-radius: 50px;
+      padding: 4px 14px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .progress-bar {
+      flex: 1; height: 7px;
+      background: var(--border);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--coral), var(--sun));
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .quiz-q {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 28px;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .quiz-hint { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    .quiz-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .quiz-opt {
+      background: var(--card);
+      border: 2.5px solid var(--border);
+      border-radius: 18px;
+      padding: 18px 12px;
+      cursor: pointer;
+      text-align: center;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+      transition: all 0.14s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .quiz-opt-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+    .quiz-opt:hover  { border-color: var(--coral); background: #FFF2EE; }
+    .quiz-opt.active { border-color: var(--coral); background: #FFF2EE; box-shadow: 0 0 0 4px rgba(244,123,94,0.18); }
+
+    .quiz-footer { display: flex; justify-content: flex-end; }
+
+    /* ── PROMPT ── */
+    #prompt-screen { padding: 32px 24px; gap: 20px; }
+
+    .section-label {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--sage);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .prompt-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      padding: 28px 22px;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .prompt-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+      background: linear-gradient(90deg, var(--coral), var(--sun), var(--mint));
+    }
+
+    .prompt-emoji { font-size: 44px; display: block; margin-bottom: 12px; }
+    .prompt-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 26px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    .prompt-desc { font-size: 15px; color: var(--muted); line-height: 1.65; }
+    .prompt-tips {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px;
+    }
+    .tip-pill {
+      background: #F0F7F4;
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 12px;
+      color: var(--sage);
+      font-weight: 700;
+    }
+
+    .prompt-actions { display: flex; gap: 12px; }
+    .btn-draw {
+      flex: 1;
+      background: var(--sage);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 15px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 20px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #5a8a6a;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .btn-draw:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 #5a8a6a; }
+    .btn-draw:active { transform: translateY(2px);  box-shadow: 0 2px 0 #5a8a6a; }
+    .btn-another {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      padding: 15px 18px;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 600;
+    }
+    .btn-another:hover { border-color: var(--coral); color: var(--coral); }
+
+    /* ── CANVAS ── */
+    #canvas-screen { gap: 0; background: #EDE8E0; }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--card);
+      border-bottom: 1.5px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .toolbar-sep { width: 1px; height: 30px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+
+    .tb-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      transition: all 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tb-btn:hover  { background: #F0EBE3; }
+    .tb-btn.active { background: #FFF2EE; border-color: var(--coral); }
+
+    .sz-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      background: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sz-btn:hover  { background: #F0EBE3; }
+    .sz-btn.active { background: #FFF2EE; border-color: var(--coral); }
+    .sz-dot { background: var(--ink); border-radius: 50%; flex-shrink: 0; }
+
+    .color-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s;
+      outline: none;
+      flex-shrink: 0;
+    }
+    .color-btn:hover  { transform: scale(1.18); }
+    .color-btn.active { border-color: var(--ink) !important; transform: scale(1.12); }
+
+    .canvas-wrap {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    #drawing-canvas {
+      background: #fff;
+      border-radius: 16px;
+      cursor: crosshair;
+      touch-action: none;
+      display: block;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .canvas-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--card);
+      border-top: 1.5px solid var(--border);
+      gap: 10px;
+    }
+    .canvas-prompt-label {
+      font-size: 13px;
+      color: var(--muted);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .canvas-prompt-label strong { color: var(--ink); }
+
+    .btn-done {
+      background: var(--coral);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 24px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #c95a3e;
+      transition: transform 0.12s, box-shadow 0.12s;
+      white-space: nowrap;
+    }
+    .btn-done:hover  { transform: translateY(-1px); box-shadow: 0 4px 0 #c95a3e; }
+    .btn-done:active { transform: translateY(1px);  box-shadow: 0 2px 0 #c95a3e; }
+
+    /* ── FEEDBACK ── */
+    #feedback-screen { padding: 28px 20px; gap: 16px; }
+
+    .drawing-preview {
+      border-radius: 18px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #fff;
+      max-height: 240px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .drawing-preview img { max-width: 100%; max-height: 240px; display: block; object-fit: contain; }
+
+    .feedback-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      padding: 22px 20px;
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+    }
+    .feedback-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+      background: linear-gradient(90deg, var(--sage), var(--mint));
+    }
+
+    .ai-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #F0F7F4;
+      border-radius: 50px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--sage);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .feedback-text {
+      font-size: 15px;
+      line-height: 1.75;
+      color: var(--ink);
+    }
+
+    .feedback-actions { display: flex; gap: 10px; }
+    .btn-save {
+      background: var(--lavender);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 20px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 17px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #7a60b0;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .btn-save:hover  { transform: translateY(-1px); box-shadow: 0 5px 0 #7a60b0; }
+    .btn-next-ch {
+      flex: 1;
+      background: var(--coral);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 14px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #c95a3e;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .btn-next-ch:hover  { transform: translateY(-2px); box-shadow: 0 6px 0 #c95a3e; }
+    .btn-next-ch:active { transform: translateY(1px);  box-shadow: 0 2px 0 #c95a3e; }
+
+    .guest-banner {
+      background: #FFF2EE;
+      border: 1.5px solid rgba(244,123,94,0.3);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      display: none;
+    }
+    .guest-banner a { color: var(--coral); font-weight: 700; text-decoration: none; cursor: pointer; }
+
+    /* ── LOADING ── */
+    .loading-box {
+      text-align: center;
+      padding: 28px 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .dots span {
+      display: inline-block;
+      width: 9px; height: 9px;
+      background: var(--coral);
+      border-radius: 50%;
+      margin: 0 3px;
+      animation: dotBounce 1.2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotBounce {
+      0%,100% { transform: translateY(0); opacity: 0.5; }
+      40%      { transform: translateY(-12px); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash" class="screen active">
+  <div class="doodle-bg">
+    <span class="doodle" style="top:6%;left:4%;animation-delay:0s">🎨</span>
+    <span class="doodle" style="top:12%;right:7%;animation-delay:0.6s">✏️</span>
+    <span class="doodle" style="top:45%;left:2%;animation-delay:1.2s">🌈</span>
+    <span class="doodle" style="bottom:22%;right:5%;animation-delay:0.4s">⭐</span>
+    <span class="doodle" style="bottom:10%;left:8%;animation-delay:1.8s">🖌️</span>
+  </div>
+  <div class="splash-logo">Little<br><span>Art Studio</span></div>
+  <div class="splash-tagline">Draw anything. Be proud of everything.</div>
+  <div class="splash-btns">
+    <button class="btn-primary" onclick="App.showQuiz(false)">Start drawing →</button>
+    <button class="btn-ghost" onclick="App.showQuiz(true)">Continue as guest</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="step-pill" id="step-label">1 of 3</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:33%"></div></div>
+  </div>
+  <div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-hint" id="quiz-hint"></div>
+  </div>
+  <div class="quiz-grid" id="quiz-grid"></div>
+  <div class="quiz-footer">
+    <button class="btn-primary" id="quiz-next" onclick="App.quizNext()" style="padding:13px 32px;font-size:18px">Next →</button>
+  </div>
+</div>
+
+<!-- PROMPT -->
+<div id="prompt-screen" class="screen">
+  <div class="section-label">✦ Your challenge</div>
+  <div class="prompt-card" id="prompt-card">
+    <div class="loading-box">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div style="margin-top:12px">Thinking of something fun for you...</div>
+    </div>
+  </div>
+  <div class="prompt-actions">
+    <button class="btn-draw" onclick="App.goCanvas()">Let's draw! 🖌️</button>
+    <button class="btn-another" onclick="App.generatePrompt()">Try another</button>
+  </div>
+</div>
+
+<!-- CANVAS -->
+<div id="canvas-screen" class="screen">
+  <div class="toolbar">
+    <div style="display:flex;gap:4px">
+      <button class="tb-btn active" id="tool-brush" onclick="Canvas.setTool('brush')" title="Brush">🖌️</button>
+      <button class="tb-btn" id="tool-eraser" onclick="Canvas.setTool('eraser')" title="Eraser">🧹</button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div style="display:flex;gap:4px" id="size-btns">
+      <button class="sz-btn" onclick="Canvas.setSize(3)" title="Small"><div class="sz-dot" style="width:6px;height:6px"></div></button>
+      <button class="sz-btn active" onclick="Canvas.setSize(8)" title="Medium"><div class="sz-dot" style="width:12px;height:12px"></div></button>
+      <button class="sz-btn" onclick="Canvas.setSize(18)" title="Large"><div class="sz-dot" style="width:20px;height:20px"></div></button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center" id="palette"></div>
+    <div class="toolbar-sep"></div>
+    <div style="display:flex;gap:4px">
+      <button class="tb-btn" onclick="Canvas.undo()" title="Undo">↩️</button>
+      <button class="tb-btn" onclick="Canvas.clear()" title="Clear">🗑️</button>
+    </div>
+  </div>
+  <div id="prompt-banner" style="background:var(--card);border-bottom:1.5px solid var(--border);overflow:hidden;transition:max-height 0.3s ease;max-height:200px">
+    <div style="padding:10px 14px 10px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+        <div style="flex:1">
+          <div id="banner-title" style="font-family:'Fredoka',sans-serif;font-size:16px;font-weight:500;color:var(--ink)"></div>
+          <div id="banner-desc" style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5"></div>
+          <div id="banner-tips" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px"></div>
+        </div>
+        <button onclick="App.toggleBanner()" id="banner-toggle" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:2px 4px;line-height:1" title="Hide prompt">▲</button>
+      </div>
+    </div>
+  </div>
+  <div class="canvas-wrap"><canvas id="drawing-canvas"></canvas></div>
+  <div class="canvas-footer">
+    <button onclick="App.toggleBanner()" id="banner-show-btn" style="display:none;background:none;border:1.5px solid var(--border);border-radius:50px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600">Show prompt</button>
+    <div class="canvas-prompt-label" id="canvas-label" style="flex:1"></div>
+    <button class="btn-done" onclick="App.submitDrawing()">Done! →</button>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedback-screen" class="screen">
+  <div class="drawing-preview"><img id="preview-img" src="" alt="Your drawing"></div>
+  <div class="feedback-card" id="feedback-card">
+    <div class="loading-box">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div style="margin-top:12px">Looking at your artwork...</div>
+    </div>
+  </div>
+  <div class="feedback-actions">
+    <button class="btn-save" onclick="App.saveDrawing()">💾 Save</button>
+    <button class="btn-next-ch" onclick="App.nextChallenge()">Next challenge →</button>
+  </div>
+  <div class="guest-banner" id="guest-banner">
+    You're a guest — <a onclick="alert('Sign-up coming soon! Keep drawing 🎨')">sign up free</a> to save your art to your gallery!
+  </div>
+</div>
+
+<script>
+// ── COLORS ──
+const COLORS = [
+  '#2D2A26','#F47B5E','#F5C842','#7BAE8C',
+  '#5BA8D4','#A78FD4','#5CBFB0','#E8748A',
+  '#F4A24A','#ffffff'
+];
+
+// ── QUIZ DATA ──
+const QUESTIONS = [
+  {
+    q: 'What do you love drawing most?',
+    hint: 'Pick your favourite — you can always draw anything!',
+    opts: [
+      { icon:'🐾', label:'Animals',        key:'animals' },
+      { icon:'🌿', label:'Nature',          key:'nature'  },
+      { icon:'🚀', label:'Space & sci-fi',  key:'space'   },
+      { icon:'🧚', label:'Fantasy & magic', key:'fantasy' },
+      { icon:'🧒', label:'People',          key:'people'  },
+    ]
+  },
+  {
+    q: 'Which art style speaks to you?',
+    hint: 'This shapes the techniques in your challenge',
+    opts: [
+      { icon:'🖋️', label:'Ink & line art',      key:'ink_lineart'   },
+      { icon:'🎨', label:'Painterly & loose',   key:'painterly'     },
+      { icon:'📐', label:'Geometric & graphic', key:'geometric'     },
+      { icon:'✏️', label:'Pencil & sketch',     key:'pencil_sketch' },
+    ]
+  },
+  {
+    q: 'How do you want feedback today?',
+    hint: "We'll adjust how we respond to your drawing",
+    opts: [
+      { icon:'🌱', label:'Encourage me!',       key:'encourage'  },
+      { icon:'🎯', label:'Help me improve',      key:'improve'    },
+      { icon:'🏆', label:'Be honest & specific', key:'honest'     },
+      { icon:'🤫', label:'Just the highlights',  key:'highlights' },
+    ]
+  }
+];
+
+// ── FALLBACKS ──
+const PROMPT_FALLBACKS = [
+  { emoji:'🐉', title:'A friendly dragon at school',
+    description:'Draw a dragon who just started school today. What does their backpack look like? Do they breathe fire when they sneeze?',
+    tips:['Give them tiny round glasses','Add a little flame on their pencil tip','What colour is their school uniform?'] },
+  { emoji:'🌊', title:'An underwater city',
+    description:'Imagine a whole city at the bottom of the ocean! What buildings do fish live in? What do the streets look like?',
+    tips:['Use seaweed as trees on the sidewalk','Add bubbles floating everywhere','Decorate buildings with coral and shells'] },
+  { emoji:'🍄', title:'Mushroom village',
+    description:"A secret village where mushrooms are the houses. Who lives inside? Draw your favourite tiny creature finding the front door.",
+    tips:['Make each mushroom a different shape','Add tiny windows with curtains','Put a pebble pathway outside'] },
+];
+const FEEDBACK_FALLBACKS = [
+  "Wow, I can see so much creativity in this drawing! The way you arranged everything makes the whole piece feel alive and full of energy. Your colour choices are so confident — they really set the mood. If you want a tip: try varying your line thickness a little, thick lines for outlines and thin lines for details inside!",
+  "This is really wonderful! You've got a great instinct for composition — your drawing pulls you in and makes you want to explore every corner. I love how you've filled the space so boldly. One fun experiment: next time try adding a tiny bit of shadow under objects to make them feel solid and real.",
+  "What a fun piece! There's so much personality here — I can tell exactly what kind of mood you were in when you drew this. The details you added make it feel like a real little world. Keep going, you're developing your very own drawing style!",
+];
+
+// ── STATE ──
+const state = {
+  isGuest: false,
+  step: 0,
+  answers: [],
+  selectedOpt: null,
+  prompt: null,
+  drawingDataUrl: null,
+};
+
+// ── APP ──
+const App = {
+  show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  },
+
+  showQuiz(isGuest) {
+    state.isGuest = isGuest;
+    state.step = 0;
+    state.answers = [];
+    this._renderStep(0);
+    this.show('quiz');
+  },
+
+  _renderStep(i) {
+    const q = QUESTIONS[i];
+    state.selectedOpt = null;
+    document.getElementById('step-label').textContent = `${i+1} of ${QUESTIONS.length}`;
+    document.getElementById('progress-fill').style.width = `${((i+1)/QUESTIONS.length)*100}%`;
+    document.getElementById('quiz-q').textContent = q.q;
+    document.getElementById('quiz-hint').textContent = q.hint;
+    const grid = document.getElementById('quiz-grid');
+    grid.innerHTML = '';
+    q.opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-opt';
+      btn.innerHTML = `<span class="quiz-opt-icon">${opt.icon}</span>${opt.label}`;
+      btn.onclick = () => {
+        grid.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.selectedOpt = opt.key;
+      };
+      grid.appendChild(btn);
+    });
+    const nb = document.getElementById('quiz-next');
+    nb.textContent = i < QUESTIONS.length - 1 ? 'Next →' : 'Start drawing →';
+  },
+
+  quizNext() {
+    if (!state.selectedOpt) return;
+    state.answers.push(state.selectedOpt);
+    if (state.step < QUESTIONS.length - 1) {
+      state.step++;
+      this._renderStep(state.step);
+    } else {
+      this.show('prompt-screen');
+      this.generatePrompt();
+    }
+  },
+
+  async generatePrompt() {
+    document.getElementById('prompt-card').innerHTML = `
+      <div class="loading-box">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div style="margin-top:12px">Thinking of something fun for you...</div>
+      </div>`;
+    try {
+      const res = await fetch('/api/prompt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: state.answers[0], style: state.answers[1], mood: state.answers[2] })
+      });
+      const data = await res.json();
+      state.prompt = data;
+      this._renderPromptCard(data);
+    } catch {
+      state.prompt = PROMPT_FALLBACKS[Math.floor(Math.random() * PROMPT_FALLBACKS.length)];
+      this._renderPromptCard(state.prompt);
+    }
+  },
+
+  _renderPromptCard(p) {
+    document.getElementById('prompt-card').innerHTML = `
+      <span class="prompt-emoji">${p.emoji}</span>
+      <div class="prompt-title">${p.title}</div>
+      <div class="prompt-desc">${p.description}</div>
+      <div class="prompt-tips">${p.tips.map(t => `<span class="tip-pill">💡 ${t}</span>`).join('')}</div>`;
+  },
+
+  goCanvas() {
+    this.show('canvas-screen');
+    Canvas.init();
+    const p = state.prompt;
+    if (p) {
+      document.getElementById('banner-title').innerHTML = `${p.emoji} ${p.title}`;
+      document.getElementById('banner-desc').textContent = p.description;
+      document.getElementById('banner-tips').innerHTML = p.tips.map(t =>
+        `<span style="background:#F0F7F4;border-radius:50px;padding:3px 10px;font-size:11px;color:var(--sage);font-weight:700">💡 ${t}</span>`
+      ).join('');
+      document.getElementById('canvas-label').innerHTML = `<strong>Draw:</strong> ${p.title}`;
+    } else {
+      document.getElementById('banner-title').textContent = 'Draw anything you like!';
+      document.getElementById('canvas-label').innerHTML = '<strong>Draw anything you like!</strong>';
+    }
+    state.bannerOpen = true;
+    document.getElementById('prompt-banner').style.maxHeight = '200px';
+    document.getElementById('banner-show-btn').style.display = 'none';
+  },
+
+  toggleBanner() {
+    state.bannerOpen = !state.bannerOpen;
+    const banner = document.getElementById('prompt-banner');
+    const showBtn = document.getElementById('banner-show-btn');
+    const toggleBtn = document.getElementById('banner-toggle');
+    if (state.bannerOpen) {
+      banner.style.maxHeight = '200px';
+      toggleBtn.textContent = '▲';
+      showBtn.style.display = 'none';
+    } else {
+      banner.style.maxHeight = '0';
+      toggleBtn.textContent = '▼';
+      showBtn.style.display = 'inline-block';
+    }
+  },
+
+  async submitDrawing() {
+    state.drawingDataUrl = Canvas.getDataUrl();
+    this.show('feedback-screen');
+    document.getElementById('preview-img').src = state.drawingDataUrl;
+    document.getElementById('guest-banner').style.display = state.isGuest ? 'block' : 'none';
+    await this._getFeedback();
+  },
+
+  async _getFeedback() {
+    document.getElementById('feedback-card').innerHTML = `
+      <div class="loading-box">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div style="margin-top:12px">Looking at your artwork...</div>
+      </div>`;
+    try {
+      const imageBase64 = state.drawingDataUrl.split(',')[1];
+      const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageBase64,
+          promptTitle: state.prompt?.title || '',
+          artStyle: state.answers[1] || '',
+          feedbackMode: state.answers[2] || 'encourage'
+        })
+      });
+      const data = await res.json();
+      document.getElementById('feedback-card').innerHTML = `
+        <div class="ai-badge">✦ Studio feedback</div>
+        <div class="feedback-text">${data.feedback}</div>`;
+    } catch {
+      const fb = FEEDBACK_FALLBACKS[Math.floor(Math.random() * FEEDBACK_FALLBACKS.length)];
+      document.getElementById('feedback-card').innerHTML = `
+        <div class="ai-badge">✦ Studio feedback</div>
+        <div class="feedback-text">${fb}</div>`;
+    }
+  },
+
+  saveDrawing() {
+    if (state.isGuest) {
+      document.getElementById('guest-banner').style.display = 'block';
+      document.getElementById('guest-banner').innerHTML =
+        '🔒 <a onclick="alert(\'Sign-up coming soon!\')">Sign up free</a> to save your art to your personal gallery!';
+      return;
+    }
+    const a = document.createElement('a');
+    a.href = state.drawingDataUrl;
+    a.download = `little-art-studio-${Date.now()}.png`;
+    a.click();
+  },
+
+  nextChallenge() {
+    state.answers = [];
+    App.showQuiz(state.isGuest);
+  }
+};
+
+// ── CANVAS ──
+const Canvas = {
+  el: null, ctx: null,
+  tool: 'brush',
+  color: '#2D2A26',
+  size: 8,
+  drawing: false,
+  history: [],
+
+  init() {
+    this.el = document.getElementById('drawing-canvas');
+    const wrap = this.el.parentElement;
+    const s = Math.min(wrap.clientWidth - 24, wrap.clientHeight - 24, 540);
+    this.el.width = s; this.el.height = s;
+    this.ctx = this.el.getContext('2d');
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillRect(0, 0, s, s);
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.history = [];
+
+    // Build palette
+    const pal = document.getElementById('palette');
+    pal.innerHTML = '';
+    COLORS.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'color-btn' + (c === this.color ? ' active' : '');
+      btn.style.background = c;
+      if (c === '#ffffff') btn.style.boxShadow = 'inset 0 0 0 1.5px #ccc';
+      btn.onclick = () => {
+        pal.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.color = c;
+        this.setTool('brush');
+      };
+      pal.appendChild(btn);
+    });
+
+    this.el.addEventListener('pointerdown', e => this._start(e));
+    this.el.addEventListener('pointermove', e => this._move(e));
+    this.el.addEventListener('pointerup',   e => this._end(e));
+    this.el.addEventListener('pointerleave',e => this._end(e));
+  },
+
+  _pos(e) {
+    const r = this.el.getBoundingClientRect();
+    const scaleX = this.el.width  / r.width;
+    const scaleY = this.el.height / r.height;
+    return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+  },
+
+  _start(e) {
+    e.preventDefault();
+    this.drawing = true;
+    this._saveHistory();
+    const p = this._pos(e);
+    this.ctx.beginPath();
+    this.ctx.moveTo(p.x, p.y);
+    if (this.tool === 'eraser') {
+      this.ctx.globalCompositeOperation = 'destination-out';
+      this.ctx.lineWidth = this.size * 3;
+    } else {
+      this.ctx.globalCompositeOperation = 'source-over';
+      this.ctx.strokeStyle = this.color;
+      this.ctx.lineWidth = this.size;
+    }
+  },
+
+  _move(e) {
+    if (!this.drawing) return;
+    e.preventDefault();
+    const p = this._pos(e);
+    this.ctx.lineTo(p.x, p.y);
+    this.ctx.stroke();
+  },
+
+  _end(e) {
+    if (!this.drawing) return;
+    this.drawing = false;
+    this.ctx.globalCompositeOperation = 'source-over';
+  },
+
+  setTool(t) {
+    this.tool = t;
+    document.getElementById('tool-brush').classList.toggle('active', t === 'brush');
+    document.getElementById('tool-eraser').classList.toggle('active', t === 'eraser');
+  },
+
+  setSize(s) {
+    this.size = s;
+    document.querySelectorAll('.sz-btn').forEach((b, i) => {
+      b.classList.toggle('active', [3, 8, 18][i] === s);
+    });
+  },
+
+  _saveHistory() {
+    if (this.history.length > 30) this.history.shift();
+    this.history.push(this.ctx.getImageData(0, 0, this.el.width, this.el.height));
+  },
+
+  undo() {
+    if (this.history.length) this.ctx.putImageData(this.history.pop(), 0, 0);
+  },
+
+  clear() {
+    this._saveHistory();
+    this.ctx.fillStyle = '#fff';
+    this.ctx.fillRect(0, 0, this.el.width, this.el.height);
+  },
+
+  getDataUrl() {
+    // Flatten transparency onto white before export
+    const tmp = document.createElement('canvas');
+    tmp.width = this.el.width; tmp.height = this.el.height;
+    const tc = tmp.getContext('2d');
+    tc.fillStyle = '#fff';
+    tc.fillRect(0, 0, tmp.width, tmp.height);
+    tc.drawImage(this.el, 0, 0);
+    return tmp.toDataURL('image/png');
+  }
+};
+</script>
+</body>
+</html>
