@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Little Art Studio</title>
+  <title>小小画室</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --cream: #FFF8F0;
@@ -24,7 +24,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Noto Sans SC', 'Nunito', sans-serif;
       background: var(--cream);
       color: var(--ink);
       min-height: 100dvh;
@@ -62,7 +62,7 @@
       border: 2px solid var(--border);
       border-radius: 50px;
       padding: 11px 32px;
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Noto Sans SC', 'Nunito', sans-serif;
       font-size: 15px;
       color: var(--muted);
       cursor: pointer;
@@ -165,7 +165,7 @@
       padding: 18px 12px;
       cursor: pointer;
       text-align: center;
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Noto Sans SC', 'Nunito', sans-serif;
       font-size: 14px;
       font-weight: 700;
       color: var(--ink);
@@ -253,7 +253,7 @@
       color: var(--muted);
       cursor: pointer;
       transition: border-color 0.15s, color 0.15s;
-      font-family: 'Nunito', sans-serif;
+      font-family: 'Noto Sans SC', 'Nunito', sans-serif;
       font-weight: 600;
     }
     .btn-another:hover { border-color: var(--coral); color: var(--coral); }
@@ -536,12 +536,12 @@
     <span class="doodle" style="bottom:22%;right:5%;animation-delay:0.4s">⭐</span>
     <span class="doodle" style="bottom:10%;left:8%;animation-delay:1.8s">🖌️</span>
   </div>
-  <div class="splash-logo">Little<br><span>Art Studio</span></div>
-  <div class="splash-tagline">Draw anything. Be proud of everything.</div>
+  <div class="splash-logo">小小<br><span>画室</span></div>
+  <div class="splash-tagline">画任何你喜欢的。每一笔都值得骄傲。</div>
   <div class="splash-btns">
-    <button class="btn-primary" onclick="App.showQuiz(false)">Start drawing →</button>
-    <button class="btn-ghost" onclick="App.showQuiz(true)">Continue as guest</button>
-    <a href="/zh" style="margin-top:8px;font-size:13px;color:var(--muted);text-decoration:none">🇨🇳 中文版</a>
+    <button class="btn-primary" onclick="App.showQuiz(false)">开始画画 →</button>
+    <button class="btn-ghost" onclick="App.showQuiz(true)">游客模式</button>
+    <a href="/" style="margin-top:8px;font-size:13px;color:var(--muted);text-decoration:none">🇬🇧 English</a>
   </div>
 </div>
 
@@ -563,16 +563,16 @@
 
 <!-- PROMPT -->
 <div id="prompt-screen" class="screen">
-  <div class="section-label">✦ Your challenge</div>
+  <div class="section-label">✦ 你的挑战</div>
   <div class="prompt-card" id="prompt-card">
     <div class="loading-box">
       <div class="dots"><span></span><span></span><span></span></div>
-      <div style="margin-top:12px">Thinking of something fun for you...</div>
+      <div style="margin-top:12px">正在为你想一个有趣的题目……</div>
     </div>
   </div>
   <div class="prompt-actions">
-    <button class="btn-draw" onclick="App.goCanvas()">Let's draw! 🖌️</button>
-    <button class="btn-another" onclick="App.generatePrompt()">Try another</button>
+    <button class="btn-draw" onclick="App.goCanvas()">开始画吧！🖌️</button>
+    <button class="btn-another" onclick="App.generatePrompt()">换一个</button>
   </div>
 </div>
 
@@ -580,10 +580,10 @@
 <div id="canvas-screen" class="screen">
   <div class="toolbar">
     <div style="display:flex;gap:4px">
-      <button class="tb-btn active" id="tool-brush"  onclick="Canvas.setTool('brush')"  title="Brush">🖌️</button>
-      <button class="tb-btn"        id="tool-eraser" onclick="Canvas.setTool('eraser')" title="Eraser">🧹</button>
-      <button class="tb-btn"        id="tool-fill"   onclick="Canvas.setTool('fill')"   title="Fill">🪣</button>
-      <button class="tb-btn"        id="tool-eyedrop" onclick="Canvas.setTool('eyedrop')" title="Eyedropper">💉</button>
+      <button class="tb-btn active" id="tool-brush"  onclick="Canvas.setTool('brush')"  title="画笔">🖌️</button>
+      <button class="tb-btn"        id="tool-eraser" onclick="Canvas.setTool('eraser')" title="橡皮擦">🧹</button>
+      <button class="tb-btn"        id="tool-fill"   onclick="Canvas.setTool('fill')"   title="填充">🪣</button>
+      <button class="tb-btn"        id="tool-eyedrop" onclick="Canvas.setTool('eyedrop')" title="取色">💉</button>
     </div>
     <div class="toolbar-sep"></div>
     <div style="display:flex;gap:4px" id="size-btns">
@@ -593,15 +593,15 @@
     </div>
     <div class="toolbar-sep"></div>
     <div class="opacity-wrap">
-      <label for="opacity-slider">opacity</label>
+      <label for="opacity-slider">透明度</label>
       <input type="range" id="opacity-slider" min="5" max="100" value="100" oninput="Canvas.setOpacity(this.value)">
     </div>
     <div class="toolbar-sep"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center" id="palette"></div>
     <div class="toolbar-sep"></div>
     <div style="display:flex;gap:4px">
-      <button class="tb-btn" onclick="Canvas.undo()"  title="Undo">↩️</button>
-      <button class="tb-btn" onclick="Canvas.clear()" title="Clear">🗑️</button>
+      <button class="tb-btn" onclick="Canvas.undo()"  title="撤销">↩️</button>
+      <button class="tb-btn" onclick="Canvas.clear()" title="清除">🗑️</button>
     </div>
   </div>
   <div id="prompt-banner" style="background:var(--card);border-bottom:1.5px solid var(--border);overflow:hidden;transition:max-height 0.3s ease;max-height:200px">
@@ -612,7 +612,7 @@
           <div id="banner-desc" style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5"></div>
           <div id="banner-tips" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px"></div>
         </div>
-        <button onclick="App.toggleBanner()" id="banner-toggle" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:2px 4px;line-height:1" title="Hide prompt">▲</button>
+        <button onclick="App.toggleBanner()" id="banner-toggle" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted);padding:2px 4px;line-height:1" title="隐藏提示">▲</button>
       </div>
     </div>
   </div>
@@ -621,16 +621,16 @@
       <canvas id="drawing-canvas"></canvas>
     </div>
     <div class="zoom-controls">
-      <button class="zoom-btn" onclick="Canvas.zoom(1.25)" title="Zoom in">+</button>
+      <button class="zoom-btn" onclick="Canvas.zoom(1.25)" title="放大">+</button>
       <div class="zoom-label" id="zoom-label">100%</div>
-      <button class="zoom-btn" onclick="Canvas.zoom(0.8)" title="Zoom out">−</button>
-      <button class="zoom-btn" onclick="Canvas.resetZoom()" title="Reset zoom" style="font-size:11px;font-weight:700">⌂</button>
+      <button class="zoom-btn" onclick="Canvas.zoom(0.8)" title="缩小">−</button>
+      <button class="zoom-btn" onclick="Canvas.resetZoom()" title="重置缩放" style="font-size:11px;font-weight:700">⌂</button>
     </div>
   </div>
   <div class="canvas-footer">
-    <button onclick="App.toggleBanner()" id="banner-show-btn" style="display:none;background:none;border:1.5px solid var(--border);border-radius:50px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600">Show prompt</button>
+    <button onclick="App.toggleBanner()" id="banner-show-btn" style="display:none;background:none;border:1.5px solid var(--border);border-radius:50px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600">显示提示</button>
     <div class="canvas-prompt-label" id="canvas-label" style="flex:1"></div>
-    <button class="btn-done" onclick="App.submitDrawing()">Done! →</button>
+    <button class="btn-done" onclick="App.submitDrawing()">完成！→</button>
   </div>
 </div>
 
@@ -640,15 +640,15 @@
   <div class="feedback-card" id="feedback-card">
     <div class="loading-box">
       <div class="dots"><span></span><span></span><span></span></div>
-      <div style="margin-top:12px">Looking at your artwork...</div>
+      <div style="margin-top:12px">正在欣赏你的作品……</div>
     </div>
   </div>
   <div class="feedback-actions">
-    <button class="btn-save" onclick="App.saveDrawing()">💾 Save</button>
-    <button class="btn-next-ch" onclick="App.nextChallenge()">Next challenge →</button>
+    <button class="btn-save" onclick="App.saveDrawing()">💾 保存</button>
+    <button class="btn-next-ch" onclick="App.nextChallenge()">下一个挑战 →</button>
   </div>
   <div class="guest-banner" id="guest-banner">
-    You're a guest — <a onclick="alert('Sign-up coming soon! Keep drawing 🎨')">sign up free</a> to save your art to your gallery!
+    你是游客模式 — <a onclick="alert('即将开放注册！继续画画吧 🎨')">免费注册</a>，保存你的作品！
   </div>
 </div>
 
@@ -663,54 +663,54 @@ const COLORS = [
 // ── QUIZ DATA ──
 const QUESTIONS = [
   {
-    q: 'What do you love drawing most?',
-    hint: 'Pick your favourite — you can always draw anything!',
+    q: '你最喜欢画什么？',
+    hint: '选一个最喜欢的吧——其实什么都可以画！',
     opts: [
-      { icon:'🐾', label:'Animals',        key:'animals' },
-      { icon:'🌿', label:'Nature',          key:'nature'  },
-      { icon:'🚀', label:'Space & sci-fi',  key:'space'   },
-      { icon:'🧚', label:'Fantasy & magic', key:'fantasy' },
-      { icon:'🧒', label:'People',          key:'people'  },
+      { icon:'🐾', label:'动物',     key:'animals' },
+      { icon:'🌿', label:'自然风景', key:'nature'  },
+      { icon:'🚀', label:'太空科幻', key:'space'   },
+      { icon:'🧚', label:'魔法奇幻', key:'fantasy' },
+      { icon:'🧒', label:'人物',     key:'people'  },
     ]
   },
   {
-    q: 'Which art style speaks to you?',
-    hint: 'This shapes the techniques in your challenge',
+    q: '你喜欢哪种绘画风格？',
+    hint: '这会影响你的挑战题目和技巧提示',
     opts: [
-      { icon:'🖋️', label:'Ink & line art',      key:'ink_lineart'   },
-      { icon:'🎨', label:'Painterly & loose',   key:'painterly'     },
-      { icon:'📐', label:'Geometric & graphic', key:'geometric'     },
-      { icon:'✏️', label:'Pencil & sketch',     key:'pencil_sketch' },
+      { icon:'🖋️', label:'线条插画', key:'ink_lineart'   },
+      { icon:'🎨', label:'写意水彩', key:'painterly'     },
+      { icon:'📐', label:'几何图形', key:'geometric'     },
+      { icon:'✏️', label:'铅笔素描', key:'pencil_sketch' },
     ]
   },
   {
-    q: 'How do you want feedback today?',
-    hint: "We'll adjust how we respond to your drawing",
+    q: '今天你想要什么样的反馈？',
+    hint: '我们会根据你的选择调整点评方式',
     opts: [
-      { icon:'🌱', label:'Encourage me!',       key:'encourage'  },
-      { icon:'🎯', label:'Help me improve',      key:'improve'    },
-      { icon:'🏆', label:'Be honest & specific', key:'honest'     },
-      { icon:'🤫', label:'Just the highlights',  key:'highlights' },
+      { icon:'🌱', label:'多多鼓励我！',   key:'encourage'  },
+      { icon:'🎯', label:'帮我进步',       key:'improve'    },
+      { icon:'🏆', label:'认真评价',       key:'honest'     },
+      { icon:'🤫', label:'简单说说就好',   key:'highlights' },
     ]
   }
 ];
 
 // ── FALLBACKS ──
 const PROMPT_FALLBACKS = [
-  { emoji:'🐉', title:'A friendly dragon at school',
-    description:'Draw a dragon who just started school today. What does their backpack look like? Do they breathe fire when they sneeze?',
-    tips:['Give them tiny round glasses','Add a little flame on their pencil tip','What colour is their school uniform?'] },
-  { emoji:'🌊', title:'An underwater city',
-    description:'Imagine a whole city at the bottom of the ocean! What buildings do fish live in? What do the streets look like?',
-    tips:['Use seaweed as trees on the sidewalk','Add bubbles floating everywhere','Decorate buildings with coral and shells'] },
-  { emoji:'🍄', title:'Mushroom village',
-    description:"A secret village where mushrooms are the houses. Who lives inside? Draw your favourite tiny creature finding the front door.",
-    tips:['Make each mushroom a different shape','Add tiny windows with curtains','Put a pebble pathway outside'] },
+  { emoji:'🐉', title:'上学的小龙',
+    description:'画一条刚刚入学的小龙。它的书包长什么样？打喷嚏的时候会喷火吗？',
+    tips:['给它戴上圆圆的小眼镜', '在铅笔尖上画一点小火苗', '想想它的校服是什么颜色的'] },
+  { emoji:'🌊', title:'海底城市',
+    description:'想象一座建在海底的城市！鱼儿住在什么样的房子里？街道是什么样的？',
+    tips:['用海藻代替路边的树', '到处都是漂浮的泡泡', '用珊瑚和贝壳装饰建筑'] },
+  { emoji:'🍄', title:'蘑菇小村庄',
+    description:'一个以蘑菇为房子的秘密村庄。谁住在里面？画出你最喜欢的小生物找到家门的样子。',
+    tips:['让每个蘑菇形状都不一样', '加上有窗帘的小窗户', '在门口铺一条鹅卵石小路'] },
 ];
 const FEEDBACK_FALLBACKS = [
-  "Wow, I can see so much creativity in this drawing! The way you arranged everything makes the whole piece feel alive and full of energy. Your colour choices are so confident — they really set the mood. If you want a tip: try varying your line thickness a little, thick lines for outlines and thin lines for details inside!",
-  "This is really wonderful! You've got a great instinct for composition — your drawing pulls you in and makes you want to explore every corner. I love how you've filled the space so boldly. One fun experiment: next time try adding a tiny bit of shadow under objects to make them feel solid and real.",
-  "What a fun piece! There's so much personality here — I can tell exactly what kind of mood you were in when you drew this. The details you added make it feel like a real little world. Keep going, you're developing your very own drawing style!",
+  "哇，这幅画里有好多创意！你把所有的东西排列得这么好，整幅画都充满了生命力。你选的颜色非常大胆，真的很有感觉！小提示：下次可以试试让线条有粗有细——轮廓线画粗一点，里面的细节线画细一点，会更好看哦！",
+  "真的很棒！你对构图有很好的感觉——这幅画让人忍不住想仔细看每一个角落。我喜欢你画画时这么大胆地填满空间。一个小实验：下次试试在物体下面加一点点阴影，会让它们看起来更立体！",
+  "这幅画太有个性了！我能感受到你画画时的心情。你加的那些细节让这幅画变成了一个真实的小世界。继续画下去，你正在形成自己独特的绘画风格！",
 ];
 
 // ── STATE ──
@@ -741,7 +741,7 @@ const App = {
   _renderStep(i) {
     const q = QUESTIONS[i];
     state.selectedOpt = null;
-    document.getElementById('step-label').textContent = `${i+1} of ${QUESTIONS.length}`;
+    document.getElementById('step-label').textContent = `第 ${i+1} / ${QUESTIONS.length} 题`;
     document.getElementById('progress-fill').style.width = `${((i+1)/QUESTIONS.length)*100}%`;
     document.getElementById('quiz-q').textContent = q.q;
     document.getElementById('quiz-hint').textContent = q.hint;
@@ -759,7 +759,7 @@ const App = {
       grid.appendChild(btn);
     });
     const nb = document.getElementById('quiz-next');
-    nb.textContent = i < QUESTIONS.length - 1 ? 'Next →' : 'Start drawing →';
+    nb.textContent = i < QUESTIONS.length - 1 ? '下一步 →' : '开始画画 →';
   },
 
   quizNext() {
@@ -778,13 +778,13 @@ const App = {
     document.getElementById('prompt-card').innerHTML = `
       <div class="loading-box">
         <div class="dots"><span></span><span></span><span></span></div>
-        <div style="margin-top:12px">Thinking of something fun for you...</div>
+        <div style="margin-top:12px">正在为你想一个有趣的题目……</div>
       </div>`;
     try {
       const res = await fetch('/api/prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme: state.answers[0], style: state.answers[1], mood: state.answers[2] })
+        body: JSON.stringify({ theme: state.answers[0], style: state.answers[1], mood: state.answers[2], lang: 'zh' })
       });
       const data = await res.json();
       state.prompt = data;
@@ -813,10 +813,10 @@ const App = {
       document.getElementById('banner-tips').innerHTML = p.tips.map(t =>
         `<span style="background:#F0F7F4;border-radius:50px;padding:3px 10px;font-size:11px;color:var(--sage);font-weight:700">💡 ${t}</span>`
       ).join('');
-      document.getElementById('canvas-label').innerHTML = `<strong>Draw:</strong> ${p.title}`;
+      document.getElementById('canvas-label').innerHTML = `<strong>挑战：</strong>${p.title}`;
     } else {
-      document.getElementById('banner-title').textContent = 'Draw anything you like!';
-      document.getElementById('canvas-label').innerHTML = '<strong>Draw anything you like!</strong>';
+      document.getElementById('banner-title').textContent = '画任何你喜欢的吧！';
+      document.getElementById('canvas-label').innerHTML = '<strong>画任何你喜欢的吧！</strong>';
     }
     state.bannerOpen = true;
     document.getElementById('prompt-banner').style.maxHeight = '200px';
@@ -851,7 +851,7 @@ const App = {
     document.getElementById('feedback-card').innerHTML = `
       <div class="loading-box">
         <div class="dots"><span></span><span></span><span></span></div>
-        <div style="margin-top:12px">Looking at your artwork...</div>
+        <div style="margin-top:12px">正在欣赏你的作品……</div>
       </div>`;
     try {
       const imageBase64 = state.drawingDataUrl.split(',')[1];
@@ -862,17 +862,18 @@ const App = {
           imageBase64,
           promptTitle: state.prompt?.title || '',
           artStyle: state.answers[1] || '',
-          feedbackMode: state.answers[2] || 'encourage'
+          feedbackMode: state.answers[2] || 'encourage',
+          lang: 'zh'
         })
       });
       const data = await res.json();
       document.getElementById('feedback-card').innerHTML = `
-        <div class="ai-badge">✦ Studio feedback</div>
+        <div class="ai-badge">✦ 画室点评</div>
         <div class="feedback-text">${data.feedback}</div>`;
     } catch {
       const fb = FEEDBACK_FALLBACKS[Math.floor(Math.random() * FEEDBACK_FALLBACKS.length)];
       document.getElementById('feedback-card').innerHTML = `
-        <div class="ai-badge">✦ Studio feedback</div>
+        <div class="ai-badge">✦ 画室点评</div>
         <div class="feedback-text">${fb}</div>`;
     }
   },
