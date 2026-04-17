@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/zh", "destination": "/public/zh.html" },
+    { "source": "/zh/", "destination": "/public/zh.html" },
     { "source": "/", "destination": "/public/index.html" }
-  ]
+  ],
+  "cleanUrls": true
 }
