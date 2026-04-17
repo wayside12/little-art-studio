@@ -312,22 +312,69 @@
     .color-btn:hover  { transform: scale(1.18); }
     .color-btn.active { border-color: var(--ink) !important; transform: scale(1.12); }
 
+    .opacity-wrap {
+      display: flex; align-items: center; gap: 5px;
+    }
+    .opacity-wrap label { font-size: 11px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+    #opacity-slider {
+      width: 64px; height: 4px;
+      -webkit-appearance: none; appearance: none;
+      background: var(--border); border-radius: 99px; outline: none; cursor: pointer;
+    }
+    #opacity-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 14px; height: 14px;
+      border-radius: 50%; background: var(--coral);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
     .canvas-wrap {
       flex: 1;
       display: flex; align-items: center; justify-content: center;
-      padding: 12px;
       overflow: hidden;
+      position: relative;
+    }
+
+    #canvas-viewport {
+      position: relative;
+      transform-origin: center center;
     }
 
     #drawing-canvas {
       background: #fff;
       border-radius: 16px;
-      cursor: crosshair;
       touch-action: none;
       display: block;
       box-shadow: 0 2px 20px rgba(0,0,0,0.12);
-      max-width: 100%;
-      max-height: 100%;
+    }
+
+    .zoom-controls {
+      position: absolute;
+      bottom: 12px; right: 12px;
+      display: flex; flex-direction: column; gap: 4px;
+      z-index: 10;
+    }
+    .zoom-btn {
+      width: 32px; height: 32px;
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      transition: background 0.12s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .zoom-btn:hover { background: #F0EBE3; }
+    .zoom-label {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 11px; font-weight: 700;
+      color: var(--muted);
+      text-align: center;
+      padding: 3px 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
     .canvas-footer {
@@ -532,20 +579,27 @@
 <div id="canvas-screen" class="screen">
   <div class="toolbar">
     <div style="display:flex;gap:4px">
-      <button class="tb-btn active" id="tool-brush" onclick="Canvas.setTool('brush')" title="Brush">🖌️</button>
-      <button class="tb-btn" id="tool-eraser" onclick="Canvas.setTool('eraser')" title="Eraser">🧹</button>
+      <button class="tb-btn active" id="tool-brush"  onclick="Canvas.setTool('brush')"  title="Brush">🖌️</button>
+      <button class="tb-btn"        id="tool-eraser" onclick="Canvas.setTool('eraser')" title="Eraser">🧹</button>
+      <button class="tb-btn"        id="tool-fill"   onclick="Canvas.setTool('fill')"   title="Fill">🪣</button>
+      <button class="tb-btn"        id="tool-eyedrop" onclick="Canvas.setTool('eyedrop')" title="Eyedropper">💉</button>
     </div>
     <div class="toolbar-sep"></div>
     <div style="display:flex;gap:4px" id="size-btns">
-      <button class="sz-btn" onclick="Canvas.setSize(3)" title="Small"><div class="sz-dot" style="width:6px;height:6px"></div></button>
+      <button class="sz-btn" onclick="Canvas.setSize(3)"  title="Small"><div class="sz-dot" style="width:6px;height:6px"></div></button>
       <button class="sz-btn active" onclick="Canvas.setSize(8)" title="Medium"><div class="sz-dot" style="width:12px;height:12px"></div></button>
       <button class="sz-btn" onclick="Canvas.setSize(18)" title="Large"><div class="sz-dot" style="width:20px;height:20px"></div></button>
+    </div>
+    <div class="toolbar-sep"></div>
+    <div class="opacity-wrap">
+      <label for="opacity-slider">opacity</label>
+      <input type="range" id="opacity-slider" min="5" max="100" value="100" oninput="Canvas.setOpacity(this.value)">
     </div>
     <div class="toolbar-sep"></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center" id="palette"></div>
     <div class="toolbar-sep"></div>
     <div style="display:flex;gap:4px">
-      <button class="tb-btn" onclick="Canvas.undo()" title="Undo">↩️</button>
+      <button class="tb-btn" onclick="Canvas.undo()"  title="Undo">↩️</button>
       <button class="tb-btn" onclick="Canvas.clear()" title="Clear">🗑️</button>
     </div>
   </div>
@@ -561,7 +615,17 @@
       </div>
     </div>
   </div>
-  <div class="canvas-wrap"><canvas id="drawing-canvas"></canvas></div>
+  <div class="canvas-wrap" id="canvas-wrap">
+    <div id="canvas-viewport">
+      <canvas id="drawing-canvas"></canvas>
+    </div>
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="Canvas.zoom(1.25)" title="Zoom in">+</button>
+      <div class="zoom-label" id="zoom-label">100%</div>
+      <button class="zoom-btn" onclick="Canvas.zoom(0.8)" title="Zoom out">−</button>
+      <button class="zoom-btn" onclick="Canvas.resetZoom()" title="Reset zoom" style="font-size:11px;font-weight:700">⌂</button>
+    </div>
+  </div>
   <div class="canvas-footer">
     <button onclick="App.toggleBanner()" id="banner-show-btn" style="display:none;background:none;border:1.5px solid var(--border);border-radius:50px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'Nunito',sans-serif;font-weight:600">Show prompt</button>
     <div class="canvas-prompt-label" id="canvas-label" style="flex:1"></div>
@@ -837,13 +901,23 @@ const Canvas = {
   tool: 'brush',
   color: '#2D2A26',
   size: 8,
+  opacity: 1.0,
   drawing: false,
   history: [],
+  // zoom & pan
+  scale: 1,
+  panX: 0, panY: 0,
+  isPanning: false,
+  lastPinchDist: null,
+  panStart: null,
 
   init() {
     this.el = document.getElementById('drawing-canvas');
-    const wrap = this.el.parentElement;
-    const s = Math.min(wrap.clientWidth - 24, wrap.clientHeight - 24, 540);
+    this.viewport = document.getElementById('canvas-viewport');
+    this.wrap = document.getElementById('canvas-wrap');
+    const w = this.wrap.clientWidth - 24;
+    const h = this.wrap.clientHeight - 24;
+    const s = Math.min(w, h, 600);
     this.el.width = s; this.el.height = s;
     this.ctx = this.el.getContext('2d');
     this.ctx.fillStyle = '#fff';
@@ -851,6 +925,8 @@ const Canvas = {
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.history = [];
+    this.scale = 1; this.panX = 0; this.panY = 0;
+    this._applyTransform();
 
     // Build palette
     const pal = document.getElementById('palette');
@@ -869,26 +945,53 @@ const Canvas = {
       pal.appendChild(btn);
     });
 
+    // pointer events on canvas
     this.el.addEventListener('pointerdown', e => this._start(e));
     this.el.addEventListener('pointermove', e => this._move(e));
     this.el.addEventListener('pointerup',   e => this._end(e));
     this.el.addEventListener('pointerleave',e => this._end(e));
+
+    // pinch-to-zoom + two-finger pan on wrap
+    this.wrap.addEventListener('touchstart',  e => this._touchStart(e),  { passive: false });
+    this.wrap.addEventListener('touchmove',   e => this._touchMove(e),   { passive: false });
+    this.wrap.addEventListener('touchend',    e => this._touchEnd(e),    { passive: false });
+
+    // scroll-wheel zoom on desktop
+    this.wrap.addEventListener('wheel', e => {
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.1 : 0.9;
+      this.zoom(factor);
+    }, { passive: false });
   },
 
   _pos(e) {
     const r = this.el.getBoundingClientRect();
-    const scaleX = this.el.width  / r.width;
-    const scaleY = this.el.height / r.height;
-    return { x: (e.clientX - r.left) * scaleX, y: (e.clientY - r.top) * scaleY };
+    return {
+      x: (e.clientX - r.left) * (this.el.width  / r.width),
+      y: (e.clientY - r.top)  * (this.el.height / r.height)
+    };
   },
 
   _start(e) {
     e.preventDefault();
+    if (e.touches && e.touches.length > 1) return; // let pinch handler take over
+    const p = this._pos(e);
+
+    if (this.tool === 'fill') {
+      this._saveHistory();
+      this._floodFill(Math.round(p.x), Math.round(p.y), this.color);
+      return;
+    }
+    if (this.tool === 'eyedrop') {
+      this._pickColor(Math.round(p.x), Math.round(p.y));
+      return;
+    }
+
     this.drawing = true;
     this._saveHistory();
-    const p = this._pos(e);
     this.ctx.beginPath();
     this.ctx.moveTo(p.x, p.y);
+    this.ctx.globalAlpha = this.opacity;
     if (this.tool === 'eraser') {
       this.ctx.globalCompositeOperation = 'destination-out';
       this.ctx.lineWidth = this.size * 3;
@@ -910,13 +1013,147 @@ const Canvas = {
   _end(e) {
     if (!this.drawing) return;
     this.drawing = false;
+    this.ctx.globalAlpha = 1.0;
     this.ctx.globalCompositeOperation = 'source-over';
+  },
+
+  // ── TOUCH / PINCH ──
+  _touchStart(e) {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      this.lastPinchDist = this._pinchDist(e.touches);
+      this.panStart = {
+        x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+        y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        panX: this.panX, panY: this.panY
+      };
+    }
+  },
+  _touchMove(e) {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const dist = this._pinchDist(e.touches);
+      if (this.lastPinchDist) {
+        const factor = dist / this.lastPinchDist;
+        this.scale = Math.max(0.5, Math.min(5, this.scale * factor));
+      }
+      this.lastPinchDist = dist;
+      if (this.panStart) {
+        const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+        this.panX = this.panStart.panX + (mx - this.panStart.x);
+        this.panY = this.panStart.panY + (my - this.panStart.y);
+      }
+      this._applyTransform();
+    }
+  },
+  _touchEnd(e) {
+    if (e.touches.length < 2) {
+      this.lastPinchDist = null;
+      this.panStart = null;
+    }
+  },
+  _pinchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  },
+
+  // ── ZOOM ──
+  zoom(factor) {
+    this.scale = Math.max(0.5, Math.min(5, this.scale * factor));
+    this._applyTransform();
+  },
+  resetZoom() {
+    this.scale = 1; this.panX = 0; this.panY = 0;
+    this._applyTransform();
+  },
+  _applyTransform() {
+    this.viewport.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.scale})`;
+    document.getElementById('zoom-label').textContent = Math.round(this.scale * 100) + '%';
+  },
+
+  // ── FLOOD FILL ──
+  _floodFill(startX, startY, fillColorHex) {
+    const imgData = this.ctx.getImageData(0, 0, this.el.width, this.el.height);
+    const data = imgData.data;
+    const w = this.el.width, h = this.el.height;
+
+    const idx = (x, y) => (y * w + x) * 4;
+    const sr = data[idx(startX, startY)];
+    const sg = data[idx(startX, startY) + 1];
+    const sb = data[idx(startX, startY) + 2];
+    const sa = data[idx(startX, startY) + 3];
+
+    // parse fill color
+    const tmp = document.createElement('canvas');
+    tmp.width = tmp.height = 1;
+    const tc = tmp.getContext('2d');
+    tc.fillStyle = fillColorHex;
+    tc.fillRect(0, 0, 1, 1);
+    const fd = tc.getImageData(0, 0, 1, 1).data;
+    const [fr, fg, fb, fa] = [fd[0], fd[1], fd[2], fd[3]];
+
+    const tolerance = 32;
+    const match = (i) => {
+      return Math.abs(data[i]   - sr) <= tolerance &&
+             Math.abs(data[i+1] - sg) <= tolerance &&
+             Math.abs(data[i+2] - sb) <= tolerance &&
+             Math.abs(data[i+3] - sa) <= tolerance;
+    };
+    const sameAsFill = (i) => data[i]===fr && data[i+1]===fg && data[i+2]===fb && data[i+3]===fa;
+
+    if (sameAsFill(idx(startX, startY))) return;
+
+    const stack = [[startX, startY]];
+    const visited = new Uint8Array(w * h);
+
+    while (stack.length) {
+      let [x, y] = stack.pop();
+      // scan left
+      while (x >= 0 && match(idx(x, y)) && !visited[y * w + x]) x--;
+      x++;
+      let spanAbove = false, spanBelow = false;
+      while (x < w && match(idx(x, y)) && !visited[y * w + x]) {
+        const i = idx(x, y);
+        data[i] = fr; data[i+1] = fg; data[i+2] = fb; data[i+3] = fa;
+        visited[y * w + x] = 1;
+        if (y > 0) {
+          if (!spanAbove && match(idx(x, y-1)) && !visited[(y-1)*w+x]) { stack.push([x, y-1]); spanAbove = true; }
+          else if (spanAbove && (!match(idx(x, y-1)) || visited[(y-1)*w+x])) spanAbove = false;
+        }
+        if (y < h - 1) {
+          if (!spanBelow && match(idx(x, y+1)) && !visited[(y+1)*w+x]) { stack.push([x, y+1]); spanBelow = true; }
+          else if (spanBelow && (!match(idx(x, y+1)) || visited[(y+1)*w+x])) spanBelow = false;
+        }
+        x++;
+      }
+    }
+    this.ctx.putImageData(imgData, 0, 0);
+  },
+
+  // ── EYEDROPPER ──
+  _pickColor(x, y) {
+    const d = this.ctx.getImageData(x, y, 1, 1).data;
+    const hex = '#' + [d[0],d[1],d[2]].map(v => v.toString(16).padStart(2,'0')).join('');
+    this.color = hex;
+    // update palette selection visually
+    const pal = document.getElementById('palette');
+    pal.querySelectorAll('.color-btn').forEach(b => {
+      b.classList.toggle('active', b.style.background === hex ||
+        b.style.backgroundColor === hex);
+    });
+    this.setTool('brush'); // switch back to brush after picking
   },
 
   setTool(t) {
     this.tool = t;
-    document.getElementById('tool-brush').classList.toggle('active', t === 'brush');
-    document.getElementById('tool-eraser').classList.toggle('active', t === 'eraser');
+    ['brush','eraser','fill','eyedrop'].forEach(id => {
+      const el = document.getElementById('tool-' + id);
+      if (el) el.classList.toggle('active', id === t);
+    });
+    // cursor feedback
+    this.el.style.cursor = t === 'fill' ? 'cell' : t === 'eyedrop' ? 'crosshair' : 'crosshair';
   },
 
   setSize(s) {
@@ -924,6 +1161,10 @@ const Canvas = {
     document.querySelectorAll('.sz-btn').forEach((b, i) => {
       b.classList.toggle('active', [3, 8, 18][i] === s);
     });
+  },
+
+  setOpacity(v) {
+    this.opacity = v / 100;
   },
 
   _saveHistory() {
@@ -942,7 +1183,6 @@ const Canvas = {
   },
 
   getDataUrl() {
-    // Flatten transparency onto white before export
     const tmp = document.createElement('canvas');
     tmp.width = this.el.width; tmp.height = this.el.height;
     const tc = tmp.getContext('2d');
